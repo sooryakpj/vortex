@@ -215,6 +215,8 @@ extern int vx_dump_perf(vx_device_h hdevice, FILE* stream) {
   uint64_t stores = 0;
   uint64_t ifetch_lat = 0;
   uint64_t load_lat   = 0;  
+
+  uint64_t same_address = 0;
   // PERF: l2cache 
   uint64_t l2cache_reads = 0;
   uint64_t l2cache_writes = 0;
@@ -294,6 +296,10 @@ extern int vx_dump_perf(vx_device_h hdevice, FILE* stream) {
           fprintf(stream, "PERF: core%d: ibuffer stalls=%ld (%d%%)\n", core_id, ibuffer_stalls_per_core, ibuffer_percent_per_core);
         }
         ibuffer_stalls += ibuffer_stalls_per_core;
+      }
+      {
+        uint64_t same_address = get_csr_64(staging_buf.data(), VX_CSR_MPM_SAME_ADDRESS);
+      if (num_cores > 1) fprintf(stream, "PERF: Same address hits: %ld\n", same_address);
       }
       // issue_stalls
       {

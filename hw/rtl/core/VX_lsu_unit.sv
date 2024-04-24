@@ -24,6 +24,10 @@ module VX_lsu_unit import VX_gpu_pkg::*; #(
    // Dcache interface
     VX_mem_bus_if.master    cache_bus_if [DCACHE_NUM_REQS],
 
+`ifdef PERF_ENABLE
+    VX_pipeline_perf_if.issue perf_issue_if,
+`endif
+
     // inputs
     VX_dispatch_if.slave    dispatch_if [`ISSUE_WIDTH],
 
@@ -95,10 +99,14 @@ module VX_lsu_unit import VX_gpu_pkg::*; #(
 
     // detect duplicate addresses
 
-    wire lsu_is_dup;
+wire lsu_is_dup;
+reg [`PERF_CTR_BITS-1:0] dup;
+
 `ifdef LSU_DUP_ENABLE
+    // Define addr_matches outside procedural block to ensure scope visibility
+    wire [NUM_LANES-2:0] addr_matches;
+
     if (NUM_LANES > 1) begin    
-        wire [NUM_LANES-2:0] addr_matches;
         for (genvar i = 0; i < (NUM_LANES-1); ++i) begin
             assign addr_matches[i] = (execute_if[0].data.rs1_data[i+1] == execute_if[0].data.rs1_data[0]) || ~execute_if[0].data.tmask[i+1];
         end
@@ -109,6 +117,20 @@ module VX_lsu_unit import VX_gpu_pkg::*; #(
 `else
     assign lsu_is_dup = 0;
 `endif
+
+`ifdef PERF_ENABLE
+    // Initialize 'dup' with a sensible default, such as 0
+    initial dup = 0;
+    
+    always @ (posedge clk) begin 
+        if (lsu_is_dup && (& execute_if[0].data.tmask))
+            dup <= dup + 1;
+    end
+    assign perf_issue_if.same_address = 5;  // Driven under PERF_ENABLE
+`else
+    assign perf_issue_if.same_address = 0;  // Ensure default assignment when PERF_ENABLE is not defined
+`endif
+
 
     // detect address type
 

@@ -196,6 +196,8 @@ import VX_fpu_pkg::*;
                         `VX_CSR_MPM_SCRB_ST_H       : read_data_ro_r = 32'(pipeline_perf_if.scb_stalls[`PERF_CTR_BITS-1:32]);
                         `VX_CSR_MPM_SCRB_ALU        : read_data_ro_r = pipeline_perf_if.units_uses[`EX_ALU][31:0];
                         `VX_CSR_MPM_SCRB_ALU_H      : read_data_ro_r = 32'(pipeline_perf_if.units_uses[`EX_ALU][`PERF_CTR_BITS-1:32]);
+                        `VX_CSR_MPM_SAME_ADDRESS    : read_data_ro_r = pipeline_perf_if.same_address[31:0];
+                        `VX_CSR_MPM_SAME_ADDRESS_H  : read_data_ro_r = 32'(pipeline_perf_if.same_address[`PERF_CTR_BITS-1:32]);
                     `ifdef EXT_F_ENABLE
                         `VX_CSR_MPM_SCRB_FPU        : read_data_ro_r = pipeline_perf_if.units_uses[`EX_FPU][31:0];
                         `VX_CSR_MPM_SCRB_FPU_H      : read_data_ro_r = 32'(pipeline_perf_if.units_uses[`EX_FPU][`PERF_CTR_BITS-1:32]);

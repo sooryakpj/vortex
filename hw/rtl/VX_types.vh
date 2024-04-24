@@ -86,6 +86,9 @@
 `define VX_CSR_MPM_SCRB_LSU_H           12'hB89
 `define VX_CSR_MPM_SCRB_SFU             12'hB0A
 `define VX_CSR_MPM_SCRB_SFU_H           12'hB8A
+
+`define VX_CSR_MPM_SAME_ADDRESS         12'hB1E	// same addresses in a warp
+`define VX_CSR_MPM_SAME_ADDRESS_H       12'hB9E
 // PERF: memory
 `define VX_CSR_MPM_IFETCHES             12'hB0B
 `define VX_CSR_MPM_IFETCHES_H           12'hB8B
